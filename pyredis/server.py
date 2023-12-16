@@ -49,3 +49,4 @@ class Server:
 
     def stop(self):
         self._running = False
+        
