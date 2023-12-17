@@ -23,5 +23,5 @@ from pyredis.types import Array, BulkString, Error, Integer, SimpleString
     ],
 )
 def test_handle_command(command, expected):
-    result = handle_command(command)
+    result = handle_command(command, None)
     assert result == expected
