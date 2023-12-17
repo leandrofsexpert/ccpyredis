@@ -1,4 +1,5 @@
 import socket
+import threading
 
 from pyredis.commands import handle_command
 from pyredis.datastore import DataStore
