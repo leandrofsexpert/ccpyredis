@@ -1,7 +1,8 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
+# Additionaly, this workflow uses CodeQL for the SAST tests
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python application
+name: Python application with SAST
 
 on:
   push:
@@ -13,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  lint_n_test:
 
     runs-on: ubuntu-latest
 
@@ -37,3 +38,32 @@ jobs:
     - name: Test with pytest
       run: |
         python -m pytest -s tests
+
+  sast_scan:
+    needs: lint_n_test
+    name: Run CodeQL Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      security-events: write
+      
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        
+    - name: Perform Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:{{matrix.language}}"
+
+ 
